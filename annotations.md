@@ -34,7 +34,7 @@
 ## Informações
 
 #### Relacionamento
-    Eager busca dados da outra tabela (FK) nos selects; Cascade também salva dados na tabela FK (no caso, o que tiver na classArray da instância) 
+Eager busca dados da outra tabela (FK) nos selects; Cascade também salva dados na tabela FK (no caso, o que tiver na classArray da instância) 
 ```ts
     // necessário ter uma instância (prop) na outra classe
     @OneToMany(() => Class, classObject => classObject.prop, { eager: true, cascade: true })
