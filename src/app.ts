@@ -1,10 +1,8 @@
 import express from "express";
-import categoryRouter from "./routes/category.routes";
-import productRouter from "./routes/product.routes";
+import routes from "./routes/routes";
 
 const app = express();
 app.use(express.json());
-app.use('/product', productRouter);
-app.use('/category', categoryRouter);
+app.use(routes);
 
 export default app;

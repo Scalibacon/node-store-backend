@@ -17,6 +17,7 @@ export class CreateProduct1629854326104 implements MigrationInterface {
                 {
                     name: "name",
                     type: "varchar",
+                    isUnique: true,
                     isNullable: false
                 }
             ]
@@ -70,14 +71,50 @@ export class CreateProduct1629854326104 implements MigrationInterface {
             ]
         }));
 
+        await queryRunner.createTable(new Table({
+            name: "picture",
+            columns: [
+                {
+                    name: "id",
+                    type: "integer",
+                    isPrimary: true,
+                    isGenerated: true,
+                    generationStrategy: 'increment',
+                },
+                {
+                    name: "image_path",
+                    type: "varchar",
+                    isNullable: false
+                },
+                {
+                    name: 'order',
+                    type: 'integer',
+                    isNullable: true
+                },
+                {
+                    name: "product_id",
+                    type: "uuid",
+                    isNullable: false
+                }
+            ]
+        }));
+
         await queryRunner.createForeignKey("product", new TableForeignKey({
             columnNames: ["category_id"],
             referencedColumnNames: ["id"],
             referencedTableName: "category"
         }));
+
+        await queryRunner.createForeignKey("picture", new TableForeignKey({
+            columnNames: ["product_id"],
+            referencedColumnNames: ["id"],
+            referencedTableName: "product",
+            onDelete: "CASCADE"
+        }));
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.dropTable("picture");
         await queryRunner.dropTable("product");
         await queryRunner.dropTable("category");
     }

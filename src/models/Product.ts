@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Category } from "./Category";
+import { Picture } from "./Picture";
 
 @Entity()
 export class Product {
@@ -18,12 +19,20 @@ export class Product {
   @Column()
   description!: string;
 
-  @ManyToOne(() => Category)
+  @ManyToOne(() => Category, category => category.products, { eager: true })
+  @JoinColumn({ name: 'category_id' })
   category!: Category;
 
-  @CreateDateColumn()
+  //Ativar caso queira gravar por categoryId, não apenas por category{ id: id }
+  // @Column({ name: 'category_id' })
+  // categoryId!: number;
+
+  @OneToMany(() => Picture, picture => picture.product, { eager: true, cascade: true })
+  pictures!: Picture[];
+
+  @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt!: Date;
 }
