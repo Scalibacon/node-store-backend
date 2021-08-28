@@ -20,20 +20,20 @@
 ```
 ---------------------------------------------------------------------------------------------    
 
-#### Script pra rodar o cli do typeorm caso não esteja global (após isso basta usar npm run typeorm + comando)
+### Script pra rodar o cli do typeorm caso não esteja global (após isso basta usar npm run typeorm + comando)
 ```json
     scripts: {
       "typeorm": "node --require ./node_modules/ts-node-dev/node_modules/ts-node/register ./node_modules/typeorm/cli.js"
     }
 ```
-##### Necessário instalar ts-node||ts-node-dev caso use arquivos .ts (pra não ter erro é bom sempre instalar)
-##### Neste caso instalei o ts-node-dev e o typeorm localmente, então precisei usá-los dentro do node_modules
+#### Necessário instalar ts-node||ts-node-dev caso use arquivos .ts (pra não ter erro é bom sempre instalar)
+#### Neste caso instalei o ts-node-dev e o typeorm localmente, então precisei usá-los dentro do node_modules
 ---------------------------------------------------------------------------------------------   
 
 *********************************************************************************************
 ## Informações
 
-#### Relacionamento
+### Relacionamento
 Eager busca dados da outra tabela (FK) nos selects; Cascade também salva dados na tabela FK (no caso, o que tiver na classArray da instância) 
 ```ts
     // necessário ter uma instância (prop) na outra classe
