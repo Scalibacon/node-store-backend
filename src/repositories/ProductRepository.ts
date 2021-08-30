@@ -3,14 +3,11 @@ import { Product } from "../models/Product";
 
 @EntityRepository(Product)
 export default class ProductRepository extends Repository<Product>{
-  public async findByName(name: string): Promise<Product[]>{
-    console.log(name)
-    const filteredProductList = await this.find({
-      where: {
-        name: name
-      }
+  public async findById(id: string): Promise<Product|undefined>{
+    const product = await this.findOne({
+      where: { id: id }
     });
 
-    return filteredProductList;
+    return product;
   }
 }

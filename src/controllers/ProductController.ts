@@ -27,15 +27,15 @@ class ProductController {
     }
   };
 
-  async filterByName(request: Request, response: Response): Promise<any> {
+  async findById(request: Request, response: Response): Promise<any> {
     try {
-      const { name } = request.params;
+      const { id } = request.params;
       const repository = getCustomRepository(ProductRepository);
-      const filteredProductList = await repository.findByName(name);
-      return response.status(200).json(filteredProductList);
+      const productFound = await repository.findById(id);
+      return response.status(200).json(productFound);
     } catch (err){
-      console.log('Error trying to get filtred product :>> ' + err.message);
-      return response.status(500).json({ error: 'Error trying to get filtred product' });
+      console.log('Error trying to find product by id :>> ' + err.message);
+      return response.status(500).json({ error: 'Error trying to find product by id' });
     }
   };
 }
