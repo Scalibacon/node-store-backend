@@ -11,8 +11,9 @@ class CategoryController {
       
       return response.status(201).json(savedCategory);
     } catch(err){
-      console.log('Error trying to create category :>> ' + err.message);
-      return response.status(500).json({ error: 'Error trying to create category' });
+      if(err instanceof Error)
+        console.log('Error trying to create category :>> ' + err.message);
+      return response.status(500).json({ error: 'Error trying to create category' });      
     }
   };
 
@@ -22,8 +23,9 @@ class CategoryController {
       const categoryList = await repository.find();
       return response.status(200).json(categoryList);
     } catch(err){
-      console.log('Error trying to get category list :>> ' + err.message);
-      return response.status(500).json({ error: 'Error trying to getcategory list' });
+      if(err instanceof Error)
+        console.log('Error trying to get category list :>> ' + err.message);
+      return response.status(500).json({ error: 'Error trying to getcategory list' });      
     }
   };
 }

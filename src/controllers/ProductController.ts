@@ -11,8 +11,9 @@ class ProductController {
   
       return response.status(201).json(savedProduct);
     } catch(err){
-      console.log('Error trying to save product :>> ' + err.message);
-      return response.status(500).json({ error: 'Error trying to save product' });
+      if(err instanceof Error)
+        console.log('Error trying to save product :>> ' + err.message);
+      return response.status(500).json({ error: 'Error trying to save product' });      
     }
   };
 
@@ -22,7 +23,8 @@ class ProductController {
       const productList = await repository.find();
       return response.json(productList);
     } catch(err){
-      console.log('Error trying to get product list :>> ' + err.message);
+      if(err instanceof Error)
+        console.log('Error trying to get product list :>> ' + err.message);
       return response.status(500).json({ error: 'Error trying to get product list' });
     }
   };
@@ -34,10 +36,40 @@ class ProductController {
       const productFound = await repository.findById(id);
       return response.status(200).json(productFound);
     } catch (err){
-      console.log('Error trying to find product by id :>> ' + err.message);
+      if(err instanceof Error)
+        console.log('Error trying to find product by id :>> ' + err.message);
       return response.status(500).json({ error: 'Error trying to find product by id' });
     }
   };
+
+  async filterByCategory(request: Request, response: Response): Promise<any> {
+    try {
+      const categoryId  = request.params.id as unknown as number;
+      const repository = getCustomRepository(ProductRepository);
+      const filteredProducts = await repository.filterByCategory(categoryId);
+
+      return response.status(200).json(filteredProducts);
+      
+    } catch(err){
+      if(err instanceof Error)
+        console.log('Error trying to filter products by category :>> ' + err.message);
+      return response.status(500).json({ error: 'Error trying to filter products by category' });
+    }
+  }
+
+  async filterByManyOptions(request: Request, response: Response): Promise<any> {
+    try {
+      const options = request.query;
+      const repository = getCustomRepository(ProductRepository);
+      const filteredProducts = await repository.filterByManyOptions(options);
+
+      return response.json(filteredProducts);
+    } catch(err){
+      if(err instanceof Error)
+        console.log('Error trying to filter products by name :>> ' + err.message);
+      return response.status(500).json({ error: 'Error trying to filter products by name' });
+    }
+  }
 }
 
 export default new ProductController();
