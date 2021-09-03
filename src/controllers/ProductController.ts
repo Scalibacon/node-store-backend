@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { getCustomRepository } from 'typeorm';
+import { Product } from '../models/Product';
 import ProductRepository from '../repositories/ProductRepository';
 
 class ProductController {
@@ -16,6 +17,25 @@ class ProductController {
       return response.status(500).json({ error: 'Error trying to save product' });      
     }
   };
+
+  async update(request: Request, response: Response): Promise<any> {
+    try {
+      const product = request.body as Product;
+      const repository = getCustomRepository(ProductRepository);
+      let productToUpdate = await repository.findById(product.id);
+      if(!productToUpdate){
+        return response.status(400).json({ error: 'No product found' });
+      }
+      productToUpdate = product;
+      repository.save(productToUpdate);
+
+      return response.json(productToUpdate);
+    } catch(err){
+      if(err instanceof Error)
+        console.log('Error trying to update product :>> ' + err.message);
+      return response.status(500).json({ error: 'Error trying to save product' });      
+    }
+  }
 
   async list(request: Request, response: Response): Promise<any> {
     try {
@@ -41,21 +61,6 @@ class ProductController {
       return response.status(500).json({ error: 'Error trying to find product by id' });
     }
   };
-
-  async filterByCategory(request: Request, response: Response): Promise<any> {
-    try {
-      const categoryId  = request.params.id as unknown as number;
-      const repository = getCustomRepository(ProductRepository);
-      const filteredProducts = await repository.filterByCategory(categoryId);
-
-      return response.status(200).json(filteredProducts);
-      
-    } catch(err){
-      if(err instanceof Error)
-        console.log('Error trying to filter products by category :>> ' + err.message);
-      return response.status(500).json({ error: 'Error trying to filter products by category' });
-    }
-  }
 
   async filterByManyOptions(request: Request, response: Response): Promise<any> {
     try {

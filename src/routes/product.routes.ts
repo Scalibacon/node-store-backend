@@ -20,6 +20,24 @@ productRouter.post('/', celebrate({
   })
 }), productController.create);
 
+productRouter.put('/', celebrate({
+  [Segments.BODY] : Joi.object().keys({
+    id: Joi.string().uuid().required(),
+    name: Joi.string().required(),
+    price: Joi.number().positive().precision(2).required(),
+    inventory: Joi.number().integer().positive().required(),
+    description: Joi.string(),
+    category: Joi.object().keys({
+      id: Joi.number().integer().positive().required()
+    }),
+    pictures: Joi.array().optional().items(Joi.object().keys({
+      id: Joi.number().integer().positive().required(),
+      imagePath: Joi.string().required(),
+      order: Joi.number().integer().positive()
+    }))
+  })
+}), productController.update);
+
 productRouter.get('/', celebrate({
   [Segments.QUERY] : Joi.object().keys({
     name: Joi.string(),
@@ -34,11 +52,5 @@ productRouter.get('/:id', celebrate({
     id: Joi.string().uuid().required()
   })
 }), productController.findById);
-
-productRouter.get('/category/:id', celebrate({
-  [Segments.PARAMS]: Joi.object().keys({
-    id: Joi.number().integer().positive().required()
-  })
-}), productController.filterByCategory);
 
 export default productRouter;
