@@ -23,9 +23,9 @@ export class Product {
   @JoinColumn({ name: 'category_id' })
   category!: Category;
 
-  //Ativar caso queira gravar por categoryId, não apenas por category{ id: id }
-  // @Column({ name: 'category_id' })
-  // categoryId!: number;
+  // Ativar caso queira gravar por categoryId, não apenas por category{ id: id }
+  @Column({ name: 'category_id' })
+  categoryId!: number;
 
   @OneToMany(() => Picture, picture => picture.product, { eager: true, cascade: true })
   pictures!: Picture[];

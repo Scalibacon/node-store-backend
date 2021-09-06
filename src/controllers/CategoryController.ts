@@ -13,7 +13,7 @@ class CategoryController {
     } catch(err){
       if(err instanceof Error)
         console.log('Error trying to create category :>> ' + err.message);
-      return response.status(500).json({ error: 'Error trying to create category' });      
+      return response.status(400).json({ error: 'Category already exists' });      
     }
   };
 
@@ -21,11 +21,11 @@ class CategoryController {
     try{
       const repository = getRepository(Category);
       const categoryList = await repository.find();
-      return response.status(200).json(categoryList);
+      return response.json(categoryList);
     } catch(err){
       if(err instanceof Error)
         console.log('Error trying to get category list :>> ' + err.message);
-      return response.status(500).json({ error: 'Error trying to getcategory list' });      
+      return response.status(500).json({ error: 'Error trying to get category list' });      
     }
   };
 }

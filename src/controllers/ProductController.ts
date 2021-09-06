@@ -6,7 +6,10 @@ import ProductRepository from '../repositories/ProductRepository';
 class ProductController {
   async create(request: Request, response: Response): Promise<any> {
     try {
-      const product = request.body;
+      const product = request.body as Product;
+      if(request.file)
+        product.pictures = [{ imagePath: request.file.filename }]
+
       const repository = getCustomRepository(ProductRepository);
       const savedProduct = await repository.save(product);
   
