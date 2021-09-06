@@ -1,22 +1,17 @@
 import { celebrate, Joi, Segments } from 'celebrate';
 import { Router } from 'express';
 import productController from '../controllers/ProductController';
+import upload from '../config/uploads';
 
 const productRouter = Router();
 
-productRouter.post('/', celebrate({
+productRouter.post('/', upload.single('picture'), celebrate({
   [Segments.BODY] : Joi.object().keys({
     name: Joi.string().required(),
     price: Joi.number().positive().precision(2).required(),
-    inventory: Joi.number().integer().positive().default(1),
+    inventory: Joi.number().integer().positive().default(0),
     description: Joi.string(),
-    category: Joi.object().keys({
-      id: Joi.number().integer().positive().required()
-    }),
-    pictures: Joi.array().optional().items(Joi.object().keys({
-      imagePath: Joi.string().required(),
-      order: Joi.number().integer().positive().default(1)
-    }))
+    categoryId: Joi.number().integer().positive().required()
   })
 }), productController.create);
 
