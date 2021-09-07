@@ -15,21 +15,14 @@ productRouter.post('/', upload.single('picture'), celebrate({
   })
 }), productController.create);
 
-productRouter.put('/', celebrate({
+productRouter.put('/', upload.single('picture'), celebrate({
   [Segments.BODY] : Joi.object().keys({
     id: Joi.string().uuid().required(),
     name: Joi.string().required(),
     price: Joi.number().positive().precision(2).required(),
     inventory: Joi.number().integer().positive().required(),
     description: Joi.string(),
-    category: Joi.object().keys({
-      id: Joi.number().integer().positive().required()
-    }),
-    pictures: Joi.array().optional().items(Joi.object().keys({
-      id: Joi.number().integer().positive().required(),
-      imagePath: Joi.string().required(),
-      order: Joi.number().integer().positive()
-    }))
+    categoryId: Joi.number().integer().positive().required()
   })
 }), productController.update);
 

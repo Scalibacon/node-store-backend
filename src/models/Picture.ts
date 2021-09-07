@@ -12,6 +12,9 @@ export class Picture {
   // @Column({ name: 'product_id' })
   // productId!: string;
 
+  @Column({ name: 'product_id' })
+  productId?: string;
+
   @ManyToOne(() => Product, product => product.pictures)
   @JoinColumn({ name: 'product_id' })
   product?: Product;
