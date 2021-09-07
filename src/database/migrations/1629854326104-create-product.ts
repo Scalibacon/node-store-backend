@@ -87,11 +87,6 @@ export class CreateProduct1629854326104 implements MigrationInterface {
                     isNullable: false
                 },
                 {
-                    name: 'order',
-                    type: 'integer',
-                    isNullable: true
-                },
-                {
                     name: "product_id",
                     type: "uuid",
                     isNullable: false

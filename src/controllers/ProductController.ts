@@ -1,12 +1,17 @@
 import { Request, Response } from 'express';
-import { getCustomRepository } from 'typeorm';
+import { unlink } from 'fs/promises';
+import { getCustomRepository, getRepository } from 'typeorm';
+import { Picture } from '../models/Picture';
 import { Product } from '../models/Product';
 import ProductRepository from '../repositories/ProductRepository';
 
 class ProductController {
   async create(request: Request, response: Response): Promise<any> {
     try {
-      const product = request.body;
+      const product = request.body as Product;
+      if(request.file)
+        product.pictures = [{ imagePath: request.file.filename }]
+
       const repository = getCustomRepository(ProductRepository);
       const savedProduct = await repository.save(product);
   
@@ -14,6 +19,8 @@ class ProductController {
     } catch(err){
       if(err instanceof Error)
         console.log('Error trying to save product :>> ' + err.message);
+      if(request.file)
+        await unlink(`./src/public/uploads/${request.file?.filename}`);
       return response.status(500).json({ error: 'Error trying to save product' });      
     }
   };
@@ -24,16 +31,32 @@ class ProductController {
       const repository = getCustomRepository(ProductRepository);
       let productToUpdate = await repository.findById(product.id);
       if(!productToUpdate){
-        return response.status(400).json({ error: 'No product found' });
-      }
+        throw new Error('Product not found');
+      }      
+      const oldPicture = productToUpdate?.pictures[0];      
       productToUpdate = product;
-      repository.save(productToUpdate);
+      
+      await repository.save(productToUpdate);
+
+      // no momento atualiza geral pq só tem 1 imagem por produto
+      if(request.file){
+        const picRepository = getRepository(Picture);
+        await picRepository.update(
+          { productId: product.id }, 
+          { imagePath: request.file.filename }
+        );
+        if(oldPicture instanceof Picture){
+          await unlink(`./src/public/uploads/${oldPicture.imagePath}`);
+        }
+      }
 
       return response.json(productToUpdate);
     } catch(err){
       if(err instanceof Error)
         console.log('Error trying to update product :>> ' + err.message);
-      return response.status(500).json({ error: 'Error trying to save product' });      
+      if(request.file)
+        await unlink(`./src/public/uploads/${request.file?.filename}`);
+      return response.status(500).json({ error: 'Error trying to update product' });      
     }
   }
 
@@ -54,7 +77,7 @@ class ProductController {
       const { id } = request.params;
       const repository = getCustomRepository(ProductRepository);
       const productFound = await repository.findById(id);
-      return response.status(200).json(productFound);
+      return response.json(productFound);
     } catch (err){
       if(err instanceof Error)
         console.log('Error trying to find product by id :>> ' + err.message);
