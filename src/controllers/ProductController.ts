@@ -18,7 +18,7 @@ class ProductController {
       return response.status(201).json(savedProduct);
     } catch(err){
       if(err instanceof Error)
-        console.log('Error trying to save product :>> ' + err.message);
+        console.log('Error trying to save product >>> ' + err.message);
       if(request.file)
         await unlink(`./src/public/uploads/${request.file?.filename}`);
       return response.status(500).json({ error: 'Error trying to save product' });      
@@ -53,24 +53,12 @@ class ProductController {
       return response.json(productToUpdate);
     } catch(err){
       if(err instanceof Error)
-        console.log('Error trying to update product :>> ' + err.message);
+        console.log('Error trying to update product >>> ' + err.message);
       if(request.file)
         await unlink(`./src/public/uploads/${request.file?.filename}`);
       return response.status(500).json({ error: 'Error trying to update product' });      
     }
   }
-
-  async list(request: Request, response: Response): Promise<any> {
-    try {
-      const repository = getCustomRepository(ProductRepository);
-      const productList = await repository.find();
-      return response.json(productList);
-    } catch(err){
-      if(err instanceof Error)
-        console.log('Error trying to get product list :>> ' + err.message);
-      return response.status(500).json({ error: 'Error trying to get product list' });
-    }
-  };
 
   async findById(request: Request, response: Response): Promise<any> {
     try {
@@ -80,7 +68,7 @@ class ProductController {
       return response.json(productFound);
     } catch (err){
       if(err instanceof Error)
-        console.log('Error trying to find product by id :>> ' + err.message);
+        console.log('Error trying to find product by id >>> ' + err.message);
       return response.status(500).json({ error: 'Error trying to find product by id' });
     }
   };
@@ -94,8 +82,8 @@ class ProductController {
       return response.json(filteredProducts);
     } catch(err){
       if(err instanceof Error)
-        console.log('Error trying to filter products by name :>> ' + err.message);
-      return response.status(500).json({ error: 'Error trying to filter products by name' });
+        console.log('Error trying to filter products >>> ' + err.message);
+      return response.status(500).json({ error: 'Error trying to filter products' });
     }
   }
 }

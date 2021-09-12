@@ -1,4 +1,4 @@
-import { Between, Brackets, EntityRepository, Like, Not, Repository } from "typeorm";
+import { Between, EntityRepository, Like, Not, Repository } from "typeorm";
 import { Product } from "../models/Product";
 
 type Options = {
