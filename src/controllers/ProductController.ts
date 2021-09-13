@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { unlink } from 'fs/promises';
-import { getCustomRepository, getRepository } from 'typeorm';
 import { Picture } from '../models/Picture';
 import { Product } from '../models/Product';
 import ProductRepository from '../repositories/ProductRepository';
+import DBConnection from '../database/DBConnection';
 
 class ProductController {
   async create(request: Request, response: Response): Promise<any> {
@@ -12,7 +12,7 @@ class ProductController {
       if(request.file)
         product.pictures = [{ imagePath: request.file.filename }]
 
-      const repository = getCustomRepository(ProductRepository);
+      const repository = DBConnection.connection.getCustomRepository(ProductRepository);
       const savedProduct = await repository.save(product);
   
       return response.status(201).json(savedProduct);
@@ -28,7 +28,7 @@ class ProductController {
   async update(request: Request, response: Response): Promise<any> {
     try {
       const product = request.body as Product;
-      const repository = getCustomRepository(ProductRepository);
+      const repository = DBConnection.connection.getCustomRepository(ProductRepository);
       let productToUpdate = await repository.findById(product.id);
       if(!productToUpdate){
         throw new Error('Product not found');
@@ -40,7 +40,7 @@ class ProductController {
 
       // no momento atualiza geral pq só tem 1 imagem por produto
       if(request.file){
-        const picRepository = getRepository(Picture);
+        const picRepository = DBConnection.connection.getRepository(Picture);
         await picRepository.update(
           { productId: product.id }, 
           { imagePath: request.file.filename }
@@ -63,7 +63,7 @@ class ProductController {
   async findById(request: Request, response: Response): Promise<any> {
     try {
       const { id } = request.params;
-      const repository = getCustomRepository(ProductRepository);
+      const repository = DBConnection.connection.getCustomRepository(ProductRepository);
       const productFound = await repository.findById(id);
       return response.json(productFound);
     } catch (err){
@@ -76,7 +76,7 @@ class ProductController {
   async filterByManyOptions(request: Request, response: Response): Promise<any> {
     try {
       const options = request.query;
-      const repository = getCustomRepository(ProductRepository);
+      const repository = DBConnection.connection.getCustomRepository(ProductRepository);
       const filteredProducts = await repository.filterByManyOptions(options);
 
       return response.json(filteredProducts);

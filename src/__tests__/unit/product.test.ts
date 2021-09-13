@@ -1,30 +1,27 @@
-import { Connection, getCustomRepository } from "typeorm";
 import { Category } from "../../models/Category";
-import connection from '../../database/connection';
+import DBConnection from '../../database/DBConnection';
 import { Product } from "../../models/Product";
 import ProductRepository from "../../repositories/ProductRepository";
 
-let conn: Connection;
-
 beforeAll(async () => {
-  conn = await connection.create('test');
+  await DBConnection.create();
 });
 
 afterAll(async () => {
-  await conn.close();
-})
+  await DBConnection.close();
+});
 
 describe('testing category crud', () => {
-  test('should create category properly', async () => {
-    const repository = conn.getRepository(Category);
+  it('should create category properly', async () => {
+    const repository = DBConnection.connection.getRepository(Category);
     const category = new Category();
     category.name = "Outros";
     const result = await repository.save(category);
     expect(result).toEqual(category);
   });
 
-  test('should list 1 category', async () => {
-    const repository = conn.getRepository(Category);
+  it('should list 1 category', async () => {
+    const repository = DBConnection.connection.getRepository(Category);
     const list = await repository.find();
     expect(list[0]).toEqual({id: 1, name: 'Outros'})
   });
@@ -32,7 +29,7 @@ describe('testing category crud', () => {
 
 describe('testing product crud', () => {
   let productId: string;
-  test('should create product properly', async () => {
+  it('should create a product', async () => {
     const product = new Product();
     product.name = "Chup-chup";
     product.categoryId = 1;
@@ -40,21 +37,65 @@ describe('testing product crud', () => {
     product.inventory = 5;
     product.price = 1.99;
 
-    const repository = conn.getCustomRepository(ProductRepository);
+    const repository = DBConnection.connection.getCustomRepository(ProductRepository);
     const savedProduct = await repository.save(product);
     productId = savedProduct.id;
     expect(savedProduct.name).toBe('Chup-chup');
   });
 
-  test('should get product by id', async () => {
-    const repository = conn.getCustomRepository(ProductRepository);
+  it('should get a product by id', async () => {
+    const repository = DBConnection.connection.getCustomRepository(ProductRepository);
     const productFound = await repository.findById(productId);
     expect(productFound?.name).toBe('Chup-chup');
-  })
+    expect(productFound?.category.name).toBe('Outros');
+    expect(productFound?.description).toBe('Testezada de levs');
+    expect(productFound?.inventory).toBe(5);
+    expect(productFound?.price).toBeCloseTo(1.99);
+  });
 
-  test('should list products with no filters', async () => {
-    const repository = conn.getCustomRepository(ProductRepository);
+  it('should list a product with no filters', async () => {
+    const repository = DBConnection.connection.getCustomRepository(ProductRepository);
     const productList = await repository.filterByManyOptions({});
     expect(productList[0].name).toBe('Chup-chup');
   });
-})
+
+  it('should list a product with all filters', async () => {
+    const repository = DBConnection.connection.getCustomRepository(ProductRepository);
+    const productList = await repository.filterByManyOptions({
+      name: 'Chu', maxPrice: 50, minPrice: 1, categoryId: 1
+    });
+    expect(productList[0].name).toBe('Chup-chup');
+  });
+
+  it('should list no product with all filters (distinct category)', async () => {
+    const repository = DBConnection.connection.getCustomRepository(ProductRepository);
+    const productList = await repository.filterByManyOptions({
+      name: 'Chu', maxPrice: 50, minPrice: 1, categoryId: 2
+    });
+    expect(productList.length).toBe(0);
+  });
+
+  it('should list no product with all filters (distinct name/desc)', async () => {
+    const repository = DBConnection.connection.getCustomRepository(ProductRepository);
+    const productList = await repository.filterByManyOptions({
+      name: 'Uhc', maxPrice: 50, minPrice: 1, categoryId: 1
+    });
+    expect(productList.length).toBe(0);
+  });
+
+  it('should list no product with all filters (distinct maxPrice)', async () => {
+    const repository = DBConnection.connection.getCustomRepository(ProductRepository);
+    const productList = await repository.filterByManyOptions({
+      name: 'Chu', maxPrice: 1.50, minPrice: 1, categoryId: 1
+    });
+    expect(productList.length).toBe(0);
+  });
+
+  it('should list no product with all filters (distinct minPrice)', async () => {
+    const repository = DBConnection.connection.getCustomRepository(ProductRepository);
+    const productList = await repository.filterByManyOptions({
+      name: 'Chu', maxPrice: 50, minPrice: 2, categoryId: 1
+    });
+    expect(productList.length).toBe(0);
+  }); 
+});

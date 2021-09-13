@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { getRepository } from "typeorm";
 import { Category } from "../models/Category";
+import  DBConnection  from '../database/DBConnection';
 
 class CategoryController {
   async create(request: Request, response: Response): Promise<any>{
     try {
       const category = request.body;
-      const repository = getRepository(Category);
+      const repository = DBConnection.connection.getRepository(Category);
       const savedCategory = await repository.save(category);
       
       return response.status(201).json(savedCategory);
@@ -19,7 +19,7 @@ class CategoryController {
 
   async list(request: Request, response: Response): Promise<any>{
     try{
-      const repository = getRepository(Category);
+      const repository = DBConnection.connection.getRepository(Category);
       const categoryList = await repository.find();
       return response.json(categoryList);
     } catch(err){
