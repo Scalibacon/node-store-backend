@@ -5,7 +5,7 @@ import upload from '../config/uploads';
 
 const productRouter = Router();
 
-productRouter.post('/', upload.single('picture'), celebrate({
+productRouter.post('/', upload.array('pictures', 1), celebrate({
   [Segments.BODY] : Joi.object().keys({
     name: Joi.string().required(),
     price: Joi.number().positive().precision(2).required(),
@@ -15,7 +15,7 @@ productRouter.post('/', upload.single('picture'), celebrate({
   })
 }), productController.create);
 
-productRouter.put('/', upload.single('picture'), celebrate({
+productRouter.put('/', upload.array('pictures', 1), celebrate({
   [Segments.BODY] : Joi.object().keys({
     id: Joi.string().uuid().required(),
     name: Joi.string().required(),

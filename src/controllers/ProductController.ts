@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { unlink } from 'fs/promises';
+import fs from 'fs';
 import { Picture } from '../models/Picture';
 import { Product } from '../models/Product';
 import ProductRepository from '../repositories/ProductRepository';
@@ -9,8 +9,10 @@ class ProductController {
   async create(request: Request, response: Response): Promise<any> {
     try {
       const product = request.body as Product;
-      if(request.file)
-        product.pictures = [{ imagePath: request.file.filename }]
+      //no momento só 1 imagem por produto
+      if(request.files instanceof Array){         
+        product.pictures = [{ imagePath: request.files[0].filename }] 
+      }        
 
       const repository = DBConnection.connection.getCustomRepository(ProductRepository);
       const savedProduct = await repository.save(product);
@@ -19,8 +21,8 @@ class ProductController {
     } catch(err){
       if(err instanceof Error)
         console.log('Error trying to save product >>> ' + err.message);
-      if(request.file)
-        await unlink(`./src/public/uploads/${request.file?.filename}`);
+      if(request.file && fs.existsSync(`./src/public/uploads/${request.file?.filename}`))
+        await fs.promises.unlink(`./src/public/uploads/${request.file?.filename}`);
       return response.status(500).json({ error: 'Error trying to save product' });      
     }
   };
@@ -39,14 +41,15 @@ class ProductController {
       await repository.save(productToUpdate);
 
       // no momento atualiza geral pq só tem 1 imagem por produto
-      if(request.file){
+      if(request.files instanceof Array){
         const picRepository = DBConnection.connection.getRepository(Picture);
         await picRepository.update(
           { productId: product.id }, 
-          { imagePath: request.file.filename }
+          { imagePath: request.files[0].filename }
         );
-        if(oldPicture instanceof Picture){
-          await unlink(`./src/public/uploads/${oldPicture.imagePath}`);
+        productToUpdate.pictures = [{ imagePath: request.files[0].filename }];
+        if(oldPicture instanceof Picture && fs.existsSync(`./src/public/uploads/${oldPicture.imagePath}`)){
+          await fs.promises.unlink(`./src/public/uploads/${oldPicture.imagePath}`);
         }
       }
 
@@ -54,8 +57,8 @@ class ProductController {
     } catch(err){
       if(err instanceof Error)
         console.log('Error trying to update product >>> ' + err.message);
-      if(request.file)
-        await unlink(`./src/public/uploads/${request.file?.filename}`);
+      if(request.file && fs.existsSync(`./src/public/uploads/${request.file?.filename}`))
+        await fs.promises.unlink(`./src/public/uploads/${request.file?.filename}`);
       return response.status(500).json({ error: 'Error trying to update product' });      
     }
   }
