@@ -12,7 +12,7 @@ afterAll(async () => {
 });
 
 describe('testing category crud', () => {
-  it('should create category properly', async () => {
+  it('should create a category', async () => {
     const repository = DBConnection.connection.getRepository(Category);
     const category = new Category();
     category.name = "Outros";
@@ -27,36 +27,44 @@ describe('testing category crud', () => {
   });
 });
 
-describe('testing product crud', () => {
-  let productId: string;
-  it('should create a product', async () => {
-    const product = new Product();
-    product.name = "Chup-chup";
-    product.categoryId = 1;
-    product.description = "Testezada de levs";
-    product.inventory = 5;
-    product.price = 1.99;
 
+
+describe('testing product crud', () => {
+  const product = new Product();
+  product.name = "Chup-chup";
+  product.categoryId = 1;
+  product.description = "Testezada de levs";
+  product.inventory = 5;
+  product.price = 1.99;
+
+  it('should create a product', async () => {
     const repository = DBConnection.connection.getCustomRepository(ProductRepository);
     const savedProduct = await repository.save(product);
-    productId = savedProduct.id;
-    expect(savedProduct.name).toBe('Chup-chup');
+    product.id = savedProduct.id;
+    expect(savedProduct.name).toBe(product.name);
+  });
+
+  it('should update a product', async () => {
+    product.description = "Uma descrição demasiada séria 😎";
+    const repository = DBConnection.connection.getCustomRepository(ProductRepository);
+    const savedProduct = await repository.save(product);
+    expect(savedProduct.description).toBe(product.description);
   });
 
   it('should get a product by id', async () => {
     const repository = DBConnection.connection.getCustomRepository(ProductRepository);
-    const productFound = await repository.findById(productId);
+    const productFound = await repository.findById(product.id);
     expect(productFound?.name).toBe('Chup-chup');
     expect(productFound?.category.name).toBe('Outros');
-    expect(productFound?.description).toBe('Testezada de levs');
-    expect(productFound?.inventory).toBe(5);
-    expect(productFound?.price).toBeCloseTo(1.99);
+    expect(productFound?.description).toBe(product.description);
+    expect(productFound?.inventory).toBe(product.inventory);
+    expect(productFound?.price).toBeCloseTo(product.price);
   });
 
   it('should list a product with no filters', async () => {
     const repository = DBConnection.connection.getCustomRepository(ProductRepository);
     const productList = await repository.filterByManyOptions({});
-    expect(productList[0].name).toBe('Chup-chup');
+    expect(productList[0].name).toBe(product.name);
   });
 
   it('should list a product with all filters', async () => {
@@ -64,7 +72,7 @@ describe('testing product crud', () => {
     const productList = await repository.filterByManyOptions({
       name: 'Chu', maxPrice: 50, minPrice: 1, categoryId: 1
     });
-    expect(productList[0].name).toBe('Chup-chup');
+    expect(productList[0].name).toBe(product.name);
   });
 
   it('should list no product with all filters (distinct category)', async () => {
