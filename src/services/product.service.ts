@@ -45,6 +45,7 @@ class ProductService{
           await picRepository.save(pictures[0]);
         }
       }
+      productToUpdate.pictures = pictures;
 
       return productToUpdate;
     } catch(err){

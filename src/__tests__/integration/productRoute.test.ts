@@ -133,8 +133,7 @@ describe('product route test', () => {
     product.price = 10;
     product.inventory = 70;
     const result = await request(app)
-      .put(`/product`)
-      .field('id', product.id)
+      .put(`/product/${product.id}`)
       .field('name', product.name)
       .field('categoryId', product.categoryId)
       .field('price', product.price)
