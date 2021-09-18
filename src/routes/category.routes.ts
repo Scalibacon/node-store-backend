@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { celebrate, Joi, Segments } from "celebrate";
-import categoryController from "../controllers/CategoryController";
+import categoryController from "../controllers/category.controller";
 
 const categoryRouter = Router();
 

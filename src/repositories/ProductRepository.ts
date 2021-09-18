@@ -1,7 +1,7 @@
 import { Between, EntityRepository, Like, Not, Repository } from "typeorm";
 import { Product } from "../models/Product";
 
-type Options = {
+export type ProductOptions = {
   name?: string,
   categoryId?: number,
   minPrice?: number,
@@ -9,7 +9,7 @@ type Options = {
 }
 
 @EntityRepository(Product)
-export default class ProductRepository extends Repository<Product>{
+class ProductRepository extends Repository<Product>{
   public async findById(id: string): Promise<Product | undefined> {
     const product = await this.findOne({
       where: { id: id }
@@ -18,7 +18,12 @@ export default class ProductRepository extends Repository<Product>{
     return product;
   }
 
-  public async filterByManyOptions({ name = '', categoryId, minPrice = 0, maxPrice = 999999999 }: Options): Promise<Product[]> {
+  public async filterByManyOptions({
+    name = '',
+    categoryId,
+    minPrice = 0,
+    maxPrice = 999999999 
+  }: ProductOptions): Promise<Product[]> {
     const filteredProducts = await this.find({
       where: [
         {
@@ -42,3 +47,5 @@ export default class ProductRepository extends Repository<Product>{
     return filteredProducts;
   }
 }
+
+export default ProductRepository;

@@ -1,6 +1,6 @@
-import { celebrate, Joi, Segments } from 'celebrate';
-import { Router } from 'express';
-import productController from '../controllers/ProductController';
+import { celebrate, isCelebrateError, Joi, Segments } from 'celebrate';
+import { Request, Router } from 'express';
+import productController from '../controllers/product.controller';
 import upload from '../config/uploads';
 
 const productRouter = Router();
@@ -15,9 +15,11 @@ productRouter.post('/', upload.array('pictures', 1), celebrate({
   })
 }), productController.create);
 
-productRouter.put('/', upload.array('pictures', 1), celebrate({
-  [Segments.BODY] : Joi.object().keys({
+productRouter.put('/:id', upload.array('pictures', 1), celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
     id: Joi.string().uuid().required(),
+  }),
+  [Segments.BODY] : Joi.object().keys({
     name: Joi.string().required(),
     price: Joi.number().positive().precision(2).required(),
     inventory: Joi.number().integer().positive().required(),
@@ -40,5 +42,7 @@ productRouter.get('/:id', celebrate({
     id: Joi.string().uuid().required()
   })
 }), productController.findById);
+
+productRouter.use(productController.deletePictureOnError);
 
 export default productRouter;
