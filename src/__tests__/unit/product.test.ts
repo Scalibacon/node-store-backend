@@ -3,6 +3,7 @@ import DBConnection from '../../database/DBConnection';
 import { Product } from "../../models/Product";
 import categoryService from "../../services/category.service";
 import productService from "../../services/product.service";
+import ErrorMessage from "../../utils/ErrorMessage";
 
 beforeAll(async () => {
   await DBConnection.create();
@@ -26,8 +27,6 @@ describe('testing category crud', () => {
     expect(list[0]).toEqual({id: 1, name: 'Outros'})
   });
 });
-
-
 
 describe('testing product crud', () => {
   const product = new Product();
@@ -111,4 +110,20 @@ describe('testing product crud', () => {
     expect(Array.isArray(productList)).toBeTruthy();
     expect(productList.length).toBe(0);
   }); 
+
+  it('shouldn\'t create a product (wrong category)', async () => {
+    product.categoryId = 5;
+    
+    const savedProduct = await productService.create(product) as ErrorMessage;
+    expect(savedProduct instanceof ErrorMessage).toBeTruthy();  
+    product.categoryId = 1;
+  });
+
+  it('shouldn\'t create a product (wrong price)', async () => {
+    product.price = parseInt("a");
+    
+    const savedProduct = await productService.create(product) as ErrorMessage;
+    expect(savedProduct instanceof ErrorMessage).toBeTruthy();  
+    product.price = 1.99;
+  });
 });

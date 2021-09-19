@@ -46,7 +46,6 @@ describe('category route test', () => {
   });
 });
 
-
 describe('product route test', () => {
   const farofaImg = `${__dirname}/../img/farofa.png`;
   const newFarofaImg = `${__dirname}/../img/farofa-cebola.jpg`;
@@ -150,5 +149,49 @@ describe('product route test', () => {
     expect(result.body.inventory).toBe(product.inventory);
     expect(fs.existsSync(uploadedPutImagePath)).toBeTruthy();
     expect(fs.existsSync(uploadedPostImagePath)).toBeFalsy();
+  });
+
+  it('shouldn\'t create a product (missing name)', async () => {
+    const result = await request(app)
+      .post('/product')
+      // .field('name', product.name)
+      .field('categoryId', product.categoryId)
+      .field('price', product.price)
+      .field('inventory', product.inventory)
+      .field('description', product.description)
+      .attach('pictures', farofaImg)
+      .expect(400);
+    console.log(result);
+
+    expect(result.body).toHaveProperty("error");
+  });
+
+  it('shouldn\'t create a product (missing price)', async () => {
+    const result = await request(app)
+      .post('/product')
+      .field('name', product.name)
+      .field('categoryId', product.categoryId)
+      // .field('price', product.price)
+      .field('inventory', product.inventory)
+      .field('description', product.description)
+      .attach('pictures', farofaImg)
+      .expect(400);
+    console.log(result);
+
+    expect(result.body).toHaveProperty("error");
+  });
+
+  it('shouldn\'t create a product (wrong category)', async () => {
+    const result = await request(app)
+      .post('/product')
+      .field('name', product.name)
+      .field('categoryId', 5)
+      .field('price', product.price)
+      .field('inventory', product.inventory)
+      .field('description', product.description)
+      .attach('pictures', farofaImg)
+      .expect(500);
+
+    expect(result.body).toHaveProperty("error");
   });
 });
