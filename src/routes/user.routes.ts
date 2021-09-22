@@ -16,7 +16,7 @@ userRouter.post('/', celebrate({
     name: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string().max(255).required(),
-    passwordConfirmation: Joi.any().valid(Joi.ref('password')).required()
+    // passwordConfirmation: Joi.any().valid(Joi.ref('password')).required()
   })
 }), userController.create);
 
