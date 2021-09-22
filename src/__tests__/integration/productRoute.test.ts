@@ -161,7 +161,6 @@ describe('product route test', () => {
       .field('description', product.description)
       .attach('pictures', farofaImg)
       .expect(400);
-    console.log(result);
 
     expect(result.body).toHaveProperty("error");
   });
@@ -176,7 +175,6 @@ describe('product route test', () => {
       .field('description', product.description)
       .attach('pictures', farofaImg)
       .expect(400);
-    console.log(result);
 
     expect(result.body).toHaveProperty("error");
   });

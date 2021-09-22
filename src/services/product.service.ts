@@ -15,7 +15,7 @@ class ProductService{
       return savedProduct;
     } catch(err){
       if(err instanceof Error)
-        console.log('Error trying to create product :>> ' + err.message);
+        console.log('Error trying to create product =>> ' + err.message);
       this.deletePicture(product.pictures);
       return new ErrorMessage('Error trying to create product'); 
     }
@@ -49,9 +49,12 @@ class ProductService{
 
       return productToUpdate;
     } catch(err){
-      if(err instanceof Error)
-        console.log('Error trying to create product :>> ' + err.message);
-      this.deletePicture(pictures);
+      this.deletePicture(pictures)
+      if(err instanceof Error){
+        console.log('Error trying to create product =>> ' + err.message);
+        if(err.message === "Product not found")
+          return new ErrorMessage('Product not found', 400);
+      }
       return new ErrorMessage('Error trying to update product'); 
     }
   }  
@@ -71,7 +74,7 @@ class ProductService{
       return productFound;
     } catch(err){
       if(err instanceof Error)
-        console.log('Error trying to find product by id :>> ' + err.message);
+        console.log('Error trying to find product by id =>> ' + err.message);
       return new ErrorMessage('Error trying to find product by id'); 
     }    
   }
@@ -84,7 +87,7 @@ class ProductService{
       return filteredProducts;
     } catch(err){
       if(err instanceof Error)
-        console.log('Error trying to filter products >>> ' + err.message);
+        console.log('Error trying to filter products =>> ' + err.message);
       return new ErrorMessage('Error trying to filter products');
     }
   }

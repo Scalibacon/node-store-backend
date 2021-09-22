@@ -1,5 +1,5 @@
-import { celebrate, isCelebrateError, Joi, Segments } from 'celebrate';
-import { Request, Router } from 'express';
+import { celebrate, Joi, Segments } from 'celebrate';
+import { Router } from 'express';
 import productController from '../controllers/product.controller';
 import upload from '../config/uploads';
 

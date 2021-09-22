@@ -11,7 +11,7 @@ class CategoryServices {
     } catch(err){
       if(err instanceof Error)
         console.log('Error trying to create category :>> ' + err.message);
-      return new ErrorMessage('Category already exists');      
+      return new ErrorMessage('Category already exists', 400);      
     }
   }
 

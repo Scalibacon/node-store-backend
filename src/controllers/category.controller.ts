@@ -8,13 +8,13 @@ class CategoryController {
     const category = request.body as Category;
     const savedCategory = await categoryService.create(category); 
           
-    return response.status(savedCategory instanceof ErrorMessage ? 500 : 201).json(savedCategory);    
+    return response.status(savedCategory instanceof ErrorMessage ? savedCategory.status : 201).json(savedCategory);    
   };
 
   async list(request: Request, response: Response): Promise<any>{
     const categoryList = await categoryService.list();
           
-    return response.status(categoryList instanceof ErrorMessage ? 500 : 200).json(categoryList); 
+    return response.status(categoryList instanceof ErrorMessage ? categoryList.status : 200).json(categoryList); 
   };
 }
 

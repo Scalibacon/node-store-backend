@@ -1,3 +1,4 @@
+require('dotenv').config();
 import 'reflect-metadata';
 import DBConnection from './database/DBConnection';
 DBConnection.create();

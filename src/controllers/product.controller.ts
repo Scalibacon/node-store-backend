@@ -14,7 +14,7 @@ class ProductController {
             
     const savedProduct = await productService.create(product); 
 
-    return response.status(savedProduct instanceof ErrorMessage ? 500 : 201).json(savedProduct);    
+    return response.status(savedProduct instanceof ErrorMessage ? savedProduct.status : 201).json(savedProduct);    
   };
 
   async update(request: Request, response: Response): Promise<any> {  
@@ -26,21 +26,20 @@ class ProductController {
       
     const updatedProduct = await productService.update(product, pictures); 
 
-    return response.status(updatedProduct instanceof Error ? 500 : 200).json(updatedProduct);   
+    return response.status(updatedProduct instanceof ErrorMessage ? updatedProduct.status : 200).json(updatedProduct);   
   }  
 
   async findById(request: Request, response: Response): Promise<any> {
     const { id } = request.params;
     const productFound = await productService.findById(id);
 
-    return response.status(productFound instanceof ErrorMessage ? 500 : 200).json(productFound);
+    return response.status(productFound instanceof ErrorMessage ? productFound.status : 200).json(productFound);
   };
 
   async filterByManyOptions(request: Request, response: Response): Promise<any> {    
     const options = request.query;
     const filteredProducts = await productService.filterByManyOptions(options);
-    // console.log(new Error('erro besta de teste'))
-    return response.status(filteredProducts instanceof ErrorMessage ? 500 : 200).json(filteredProducts);
+    return response.status(filteredProducts instanceof ErrorMessage ? filteredProducts.status : 200).json(filteredProducts);
   }
      
   async deletePictureOnError(error: Error, request: Request, response: Response, next: Function){
