@@ -29,6 +29,26 @@ class AdminService{
       return new ErrorMessage('Error trying to log in');
     }
   }
+
+  authAdmin(token: string | undefined, permission: number = 1): string | ErrorMessage{
+    try{
+      if(!token){
+        return new ErrorMessage('No token provided', 401);
+      }
+  
+      const decodedAdmin = jwt.verify(token, process.env.SECRET || "secret") as Admin;
+      if(!decodedAdmin.role || decodedAdmin.role < permission){
+        return new ErrorMessage('Permission denied', 401);
+      }
+  
+      // futuramente pode ser feita uma checagem no banco
+      return decodedAdmin.id;
+    }catch(err){
+      if(err instanceof Error)
+        console.log('Error trying to check jwt =>> ' + err.message);
+      return new ErrorMessage('Permission denied', 401);
+    }    
+  }
 }
 
 export default new AdminService();
