@@ -4,6 +4,7 @@ import { Product } from '../models/Product';
 import productService from '../services/product.service';
 import ErrorMessage from '../utils/ErrorMessage';
 import { isCelebrateError } from 'celebrate';
+import { deleteUploadedPicture } from '../utils/deletePicture';
 
 class ProductController {
   async create(request: Request, response: Response): Promise<any> {
@@ -47,8 +48,7 @@ class ProductController {
       return next(error);
     
     if(request.files instanceof Array && request.files.length > 0){
-      const picture = { imagePath: request.files[0].filename } as Picture;
-      productService.deletePicture(picture);
+      deleteUploadedPicture(request.files[0].filename)
     }
 
     return next(error);

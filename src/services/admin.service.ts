@@ -5,6 +5,19 @@ import Admin from "../models/Admin";
 import ErrorMessage from "../utils/ErrorMessage";
 
 class AdminService{
+  async create(admin: Admin): Promise<Admin | ErrorMessage>{
+    try {
+      const repository = DBConnection.connection.getRepository(Admin);
+      const createdAdmin = await repository.save(admin);
+
+      return createdAdmin;
+    } catch(err){
+      if(err instanceof Error)
+        console.log('Error trying to create a new admin =>> ' + err.message);
+      return new ErrorMessage('Error trying to create a new admin'); 
+    }    
+  }
+
   async login(email: string, password: string): Promise<String | ErrorMessage>{
     try {
       let token: String | undefined;

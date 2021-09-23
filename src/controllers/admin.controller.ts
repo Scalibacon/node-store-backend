@@ -1,8 +1,16 @@
 import { NextFunction, Request, Response } from "express";
+import Admin from "../models/Admin";
 import adminService from "../services/admin.service";
+import { deleteUploadedPicture } from "../utils/deletePicture";
 import ErrorMessage from "../utils/ErrorMessage";
 
 class AdminController{
+  async create(request: Request, response: Response){
+    const admin = request.body as Admin;
+    const createdAdmin = adminService.create(admin);
+    return response.status(createdAdmin instanceof ErrorMessage ? createdAdmin.status : 201).json(createdAdmin);
+  }
+
   async login(request: Request, response: Response){
     const { email, password } = request.body;
 
@@ -14,10 +22,13 @@ class AdminController{
   authAdmin(request: Request, response: Response, next: NextFunction, permission: number = 1){
     const token = request.headers['x-access-token'] as string;
     const adminId = adminService.authAdmin(token, permission);
-    if(adminId instanceof ErrorMessage)
+    if(adminId instanceof ErrorMessage){
+      if(request.files instanceof Array && request.files.length > 0)
+        deleteUploadedPicture(request.files.map(file => file.filename));
+
       return response.status(adminId.status).json(adminId);
-    // request.body.adminId = adminId;
-    next();
+    }      
+    return next();
   }
 }
 

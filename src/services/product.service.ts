@@ -1,5 +1,6 @@
 import DBConnection from "../database/DBConnection";
 import fs from 'fs';
+import { deleteUploadedPicture } from "../utils/deletePicture";
 import { Product } from "../models/Product";
 import ProductRepository, { ProductOptions } from "../repositories/ProductRepository";
 import ErrorMessage from "../utils/ErrorMessage";
@@ -16,7 +17,7 @@ class ProductService{
     } catch(err){
       if(err instanceof Error)
         console.log('Error trying to create product =>> ' + err.message);
-      this.deletePicture(product.pictures);
+        deleteUploadedPicture(product.pictures.map(pic => pic.imagePath));
       return new ErrorMessage('Error trying to create product'); 
     }
   }
@@ -40,7 +41,7 @@ class ProductService{
             { productId: pictures[0].productId }, 
             { imagePath: pictures[0].imagePath }
           );
-          this.deletePicture(oldPicture);
+          deleteUploadedPicture(oldPicture.imagePath);
         } else {
           await picRepository.save(pictures[0]);
         }
@@ -49,7 +50,7 @@ class ProductService{
 
       return productToUpdate;
     } catch(err){
-      this.deletePicture(pictures)
+      deleteUploadedPicture(pictures.map(pic => pic.imagePath));
       if(err instanceof Error){
         console.log('Error trying to create product =>> ' + err.message);
         if(err.message === "Product not found")
@@ -58,14 +59,6 @@ class ProductService{
       return new ErrorMessage('Error trying to update product'); 
     }
   }  
-
-  async deletePicture(pictures: Picture[] | Picture): Promise<void>{
-    if(!(pictures instanceof Array))
-      pictures = [pictures];
-    
-    if(pictures.length > 0 && fs.existsSync(`./src/public/uploads/${pictures[0].imagePath}`))
-      return await fs.promises.unlink(`./src/public/uploads/${pictures[0].imagePath}`);
-  }
 
   async findById(id: string): Promise<Product | undefined | ErrorMessage>{
     try{
