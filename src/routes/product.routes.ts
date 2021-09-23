@@ -2,10 +2,11 @@ import { celebrate, Joi, Segments } from 'celebrate';
 import { Router } from 'express';
 import productController from '../controllers/product.controller';
 import upload from '../config/uploads';
+import adminController from '../controllers/admin.controller';
 
 const productRouter = Router();
 
-productRouter.post('/', upload.array('pictures', 1), celebrate({
+productRouter.post('/', adminController.authAdmin, upload.array('pictures', 1), celebrate({
   [Segments.BODY] : Joi.object().keys({
     name: Joi.string().required(),
     price: Joi.number().positive().precision(2).required(),
@@ -15,7 +16,7 @@ productRouter.post('/', upload.array('pictures', 1), celebrate({
   })
 }), productController.create);
 
-productRouter.put('/:id', upload.array('pictures', 1), celebrate({
+productRouter.put('/:id', adminController.authAdmin, upload.array('pictures', 1), celebrate({
   [Segments.PARAMS]: Joi.object().keys({
     id: Joi.string().uuid().required(),
   }),
