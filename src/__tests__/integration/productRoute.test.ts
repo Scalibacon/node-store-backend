@@ -7,6 +7,7 @@ import { Product } from '../../models/Product';
 
 let uploadedPostImagePath: string;
 let uploadedPutImagePath: string;
+let adminJwt: string;
 
 beforeAll(async () => {
   await DBConnection.create();
@@ -24,13 +25,29 @@ afterAll(async () => {
   }
 });
 
-describe('category route test', () => {
-  it('should create a category', async () => {
-    const category = new Category();
-    category.name = "Alimentos";
+describe('get admin authorization', () => {
+  it('should receive a jwt as admin', async () => {
+    const result = await request(app)
+      .post('/admin/login')      
+      .send({ 
+        email: process.env.DEFAULT_USER_EMAIL, 
+        password: process.env.DEFAULT_USER_PASSWORD
+      })
+      .expect(201);
 
+    expect(typeof result.body === "string").toBeTruthy();
+    adminJwt = result.body;
+  });
+});
+
+describe('category route test', () => {
+  const category = new Category();
+  category.name = "Alimentos";
+
+  it('should create a category', async () => {
     const result = await request(app)
       .post('/category')
+      .set('x-access-token', adminJwt)
       .send(category)
       .expect(201);
 
@@ -43,6 +60,36 @@ describe('category route test', () => {
       .expect(200);
 
     expect(result.body[0]).toEqual({id: 1, name: "Alimentos"});
+  });
+
+  it('shouldn\'t create a category (duplicated)', async () => {
+    const result = await request(app)
+      .post('/category')
+      .set('x-access-token', adminJwt)
+      .send(category)
+      .expect(400);
+
+    expect(result.body).toHaveProperty('error');
+  });
+
+  it('shouldn\'t create a category (missing jwt)', async () => {    
+    const result = await request(app)
+      .post('/category')
+      // .set('x-access-token', adminJwt)
+      .send(category)
+      .expect(401);
+
+    expect(result.body).toHaveProperty('error');
+  }); 
+
+  it('shouldn\'t create a category (wrong jwt)', async () => {    
+    const result = await request(app)
+      .post('/category')
+      .set('x-access-token', adminJwt + '.')
+      .send(category)
+      .expect(401);
+
+    expect(result.body).toHaveProperty('error');
   });
 });
 
@@ -59,6 +106,7 @@ describe('product route test', () => {
   it('should create a product with image', async () => {
     const result = await request(app)
       .post('/product')
+      .set('x-access-token', adminJwt)
       .field('name', product.name)
       .field('categoryId', product.categoryId)
       .field('price', product.price)
@@ -133,6 +181,7 @@ describe('product route test', () => {
     product.inventory = 70;
     const result = await request(app)
       .put(`/product/${product.id}`)
+      .set('x-access-token', adminJwt)
       .field('name', product.name)
       .field('categoryId', product.categoryId)
       .field('price', product.price)
@@ -151,9 +200,26 @@ describe('product route test', () => {
     expect(fs.existsSync(uploadedPostImagePath)).toBeFalsy();
   });
 
+  it('should update a product without image', async () => {
+    const result = await request(app)
+      .put(`/product/${product.id}`)
+      .set('x-access-token', adminJwt)
+      .field('name', product.name)
+      .field('categoryId', product.categoryId)
+      .field('price', product.price)
+      .field('inventory', product.inventory)
+      .field('description', product.description)
+      // .attach('pictures', newFarofaImg)
+      .expect(200);
+
+    console.log(result.body);
+    expect(result.body.name).toBe(product.name);
+  });
+
   it('shouldn\'t create a product (missing name)', async () => {
     const result = await request(app)
       .post('/product')
+      .set('x-access-token', adminJwt)
       // .field('name', product.name)
       .field('categoryId', product.categoryId)
       .field('price', product.price)
@@ -168,6 +234,7 @@ describe('product route test', () => {
   it('shouldn\'t create a product (missing price)', async () => {
     const result = await request(app)
       .post('/product')
+      .set('x-access-token', adminJwt)
       .field('name', product.name)
       .field('categoryId', product.categoryId)
       // .field('price', product.price)
@@ -182,6 +249,7 @@ describe('product route test', () => {
   it('shouldn\'t create a product (wrong category)', async () => {
     const result = await request(app)
       .post('/product')
+      .set('x-access-token', adminJwt)
       .field('name', product.name)
       .field('categoryId', 5)
       .field('price', product.price)
@@ -189,6 +257,52 @@ describe('product route test', () => {
       .field('description', product.description)
       .attach('pictures', farofaImg)
       .expect(500);
+
+    expect(result.body).toHaveProperty("error");
+  });
+
+  it('shouldn\'t create a product (missing jwt)', async () => {
+    const result = await request(app)
+      .post('/product')
+      // .set('x-access-token', adminJwt)
+      .field('name', product.name)
+      .field('categoryId', 5)
+      .field('price', product.price)
+      .field('inventory', product.inventory)
+      .field('description', product.description)
+      .attach('pictures', farofaImg)
+      .expect(401);
+
+    expect(result.body).toHaveProperty("error");
+  });
+
+  it('shouldn\'t create a product (wrong jwt)', async () => {
+    const result = await request(app)
+      .post('/product')
+      .set('x-access-token', adminJwt + '.')
+      .field('name', product.name)
+      .field('categoryId', 5)
+      .field('price', product.price)
+      .field('inventory', product.inventory)
+      .field('description', product.description)
+      .attach('pictures', farofaImg)
+      .expect(401);
+
+    expect(result.body).toHaveProperty("error");
+  });
+
+  it('shouldn\'t update a product (missing jwt)', async () => {
+    product.name = "Farofa com cebola";
+    const result = await request(app)
+      .put(`/product/${product.id}`)
+      // .set('x-access-token', adminJwt)
+      .field('name', product.name)
+      .field('categoryId', product.categoryId)
+      .field('price', product.price)
+      .field('inventory', product.inventory)
+      .field('description', product.description)
+      .attach('pictures', newFarofaImg)
+      .expect(401);
 
     expect(result.body).toHaveProperty("error");
   });
