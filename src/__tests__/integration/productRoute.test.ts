@@ -212,7 +212,6 @@ describe('product route test', () => {
       // .attach('pictures', newFarofaImg)
       .expect(200);
 
-    console.log(result.body);
     expect(result.body.name).toBe(product.name);
   });
 
@@ -279,7 +278,7 @@ describe('product route test', () => {
   it('shouldn\'t create a product (wrong jwt)', async () => {
     const result = await request(app)
       .post('/product')
-      .set('x-access-token', adminJwt + '.')
+      .set('x-access-token', adminJwt + 'aaa')
       .field('name', product.name)
       .field('categoryId', 5)
       .field('price', product.price)

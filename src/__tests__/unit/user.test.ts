@@ -21,9 +21,9 @@ describe('testing user service', () => {
   user.email = "teste@teste.com";
   user.password = "teste";
 
-  it('should create a user', async () => { 
+  it('should create a user', async () => {
     const result = await userService.create(user) as User;
-    user.password = "teste"; 
+    user.password = "teste";
 
     expect(result instanceof User).toBeTruthy();
     expect(result).toHaveProperty("id");
@@ -55,7 +55,7 @@ describe('testing admin service', () => {
   superadmin.password = process.env.DEFAULT_USER_PASSWORD || "password";
   superadmin.email = process.env.DEFAULT_USER_EMAIL ?? "email";
 
-  it('should log in with default superadmin and receive a jwt', async () => { 
+  it('should log in with default superadmin and receive a jwt', async () => {
     const { email, password } = superadmin;
     const result = await adminService.login(email, password) as string;
     const decodedJwt = jwt.verify(result, process.env.SECRET || 'secret') as Admin;
@@ -73,5 +73,18 @@ describe('testing admin service', () => {
     const { email } = superadmin;
     const result = await userService.login(email, "senhaerrad@") as ErrorMessage;
     expect(result instanceof ErrorMessage).toBeTruthy();
+  });
+
+  it('should create a admin', async () => {
+    const newAdmin = new Admin();
+    newAdmin.name = "Novo Adm";
+    newAdmin.email = "novoadmin@email.com";
+    newAdmin.password = "novasenha";
+    newAdmin.role = 1;
+    newAdmin.isActive = true;
+    const result = await adminService.create(newAdmin);
+
+    expect(result instanceof Admin).toBeTruthy();
+    expect(result).toHaveProperty('id');
   });
 });

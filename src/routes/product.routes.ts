@@ -6,7 +6,7 @@ import adminController from '../controllers/admin.controller';
 
 const productRouter = Router();
 
-productRouter.post('/', adminController.authAdmin, upload.array('pictures', 1), celebrate({
+productRouter.post('/', upload.array('pictures', 1), adminController.authAdmin, celebrate({
   [Segments.BODY] : Joi.object().keys({
     name: Joi.string().required(),
     price: Joi.number().positive().precision(2).required(),
@@ -16,7 +16,7 @@ productRouter.post('/', adminController.authAdmin, upload.array('pictures', 1), 
   })
 }), productController.create);
 
-productRouter.put('/:id', adminController.authAdmin, upload.array('pictures', 1), celebrate({
+productRouter.put('/:id', upload.array('pictures', 1), adminController.authAdmin, celebrate({
   [Segments.PARAMS]: Joi.object().keys({
     id: Joi.string().uuid().required(),
   }),

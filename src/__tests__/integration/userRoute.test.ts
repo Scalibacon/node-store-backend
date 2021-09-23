@@ -89,15 +89,29 @@ describe('admin route test', () => {
   const admin = new Admin();
   admin.email = process.env.DEFAULT_USER_EMAIL || 'email';
   admin.password = process.env.DEFAULT_USER_PASSWORD || 'password';
+  let adminJwt: string;
 
-  it('should log in and receive a jwt', async () => {
+  it('should log in as superadmin and receive a jwt', async () => {
     const result = await request(app)
       .post('/admin/login')
       .send({ email: admin.email, password: admin.password })
       .expect(201);
 
     expect(typeof result.body === "string").toBeTruthy();
+    adminJwt = result.body;
   });
+
+  // it('should create a admin', async () => {
+  //   const newAdmin = new Admin();
+  //   newAdmin.name = "Novo Adm";
+  //   newAdmin.email = "novoadmin@email.com";
+  //   newAdmin.password = "novasenha";
+
+  //   const result = await request(app)
+  //     .post('/admin/')
+  //     .send({ email: admin.email, password: admin.password })
+  //     .expect(201);
+  // });
 
   it('shouldn\'t log in (invalid email)', async () => {
     const result = await request(app)
