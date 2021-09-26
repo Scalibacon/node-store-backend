@@ -7,7 +7,7 @@ import ErrorMessage from "../utils/ErrorMessage";
 class AdminController{
   async create(request: Request, response: Response){
     const admin = request.body as Admin;
-    const createdAdmin = adminService.create(admin);
+    const createdAdmin = await adminService.create(admin);
     return response.status(createdAdmin instanceof ErrorMessage ? createdAdmin.status : 201).json(createdAdmin);
   }
 

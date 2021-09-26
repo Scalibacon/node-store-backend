@@ -11,4 +11,17 @@ adminRouter.post('/login', celebrate({
   })
 }), adminController.login);
 
+adminRouter.post('/', adminController.authAdmin, celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    name: Joi.string().required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
+    cpf: Joi.string(),
+    role: Joi.number().integer().default(1),
+    isActive: Joi.boolean().default(true)
+  })
+}), adminController.create);
+
+//criar roda de create
+
 export default adminRouter;

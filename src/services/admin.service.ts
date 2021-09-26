@@ -8,6 +8,7 @@ class AdminService{
   async create(admin: Admin): Promise<Admin | ErrorMessage>{
     try {
       const repository = DBConnection.connection.getRepository(Admin);
+      admin.password = md5(admin.password);
       const createdAdmin = await repository.save(admin);
 
       return createdAdmin;
