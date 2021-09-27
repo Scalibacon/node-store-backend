@@ -5,6 +5,8 @@ import DBConnection from '../../database/DBConnection';
 import Admin from '../../models/Admin';
 import User from '../../models/User';
 
+let adminJwt: string;
+
 beforeAll(async () => {
   await DBConnection.create();
 });
@@ -89,7 +91,6 @@ describe('admin route test', () => {
   const admin = new Admin();
   admin.email = process.env.DEFAULT_USER_EMAIL || 'email';
   admin.password = process.env.DEFAULT_USER_PASSWORD || 'password';
-  let adminJwt: string;
 
   it('should log in as superadmin and receive a jwt', async () => {
     const result = await request(app)
@@ -101,17 +102,20 @@ describe('admin route test', () => {
     adminJwt = result.body;
   });
 
-  // it('should create a admin', async () => {
-  //   const newAdmin = new Admin();
-  //   newAdmin.name = "Novo Adm";
-  //   newAdmin.email = "novoadmin@email.com";
-  //   newAdmin.password = "novasenha";
+  it('should create a admin', async () => {
+    const newAdmin = new Admin();
+    newAdmin.name = "Novo Adm";
+    newAdmin.email = "novoadmin@email.com";
+    newAdmin.password = "novasenha";
 
-  //   const result = await request(app)
-  //     .post('/admin/')
-  //     .send({ email: admin.email, password: admin.password })
-  //     .expect(201);
-  // });
+    const result = await request(app)
+      .post('/admin/')
+      .set('x-access-token', adminJwt)
+      .send(newAdmin)
+      .expect(201);
+
+    expect(result.body).toHaveProperty('id');
+  });
 
   it('shouldn\'t log in (invalid email)', async () => {
     const result = await request(app)
