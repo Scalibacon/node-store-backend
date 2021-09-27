@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
-export default class Person{
+export default abstract class Person{
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 

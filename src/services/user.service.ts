@@ -42,10 +42,19 @@ class UserService{
         console.log('Error trying to create user =>> ' + err.message);      
       return new ErrorMessage('Error trying to create user');
     }
-    
+  }
 
+  async update(user: User): Promise<User | ErrorMessage>{
+    try{
+      const repository = DBConnection.connection.getRepository(User);
+      const updatedUser = await repository.save(user);
 
-
+      return updatedUser;
+    }catch(err){
+      if(err instanceof Error)
+        console.log('Error trying to update user =>> ' + err.message);      
+      return new ErrorMessage('Error trying to update user');
+    }
   }
 }
 

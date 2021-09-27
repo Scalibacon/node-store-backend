@@ -1,5 +1,6 @@
 import { celebrate, Joi, Segments } from "celebrate";
 import { Router } from "express";
+import auth from "../auth/auth";
 import adminController from "../controllers/admin.controller";
 
 const adminRouter = Router();
@@ -11,7 +12,7 @@ adminRouter.post('/login', celebrate({
   })
 }), adminController.login);
 
-adminRouter.post('/', adminController.authAdmin, celebrate({
+adminRouter.post('/', auth.authAdmin, celebrate({
   [Segments.BODY]: Joi.object().keys({
     name: Joi.string().required(),
     email: Joi.string().email().required(),
@@ -21,7 +22,5 @@ adminRouter.post('/', adminController.authAdmin, celebrate({
     isActive: Joi.boolean().default(true)
   })
 }), adminController.create);
-
-//criar roda de create
 
 export default adminRouter;

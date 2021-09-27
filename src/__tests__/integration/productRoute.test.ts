@@ -4,9 +4,10 @@ import app from '../../app';
 import DBConnection from '../../database/DBConnection';
 import { Category } from '../../models/Category';
 import { Product } from '../../models/Product';
+import { deleteUploadedPicture } from '../../utils/deletePicture';
 
-let uploadedPostImagePath: string;
-let uploadedPutImagePath: string;
+let uploadedPostFilename: string;
+let uploadedPutFilename: string;
 let adminJwt: string;
 
 beforeAll(async () => {
@@ -16,13 +17,9 @@ beforeAll(async () => {
 afterAll(async () => {
   await DBConnection.close();
 
-  if(fs.existsSync(uploadedPostImagePath)){
-    await fs.promises.unlink(uploadedPostImagePath);
-  }
+  deleteUploadedPicture(uploadedPostFilename);
 
-  if(fs.existsSync(uploadedPutImagePath)){
-    await fs.promises.unlink(uploadedPutImagePath);
-  }
+  deleteUploadedPicture(uploadedPutFilename);
 });
 
 describe('get admin authorization', () => {
@@ -115,12 +112,13 @@ describe('product route test', () => {
       .attach('pictures', farofaImg)
       .expect(201);
 
-    uploadedPostImagePath = `${__dirname}/../../public/uploads/${result.body.pictures[0].imagePath}`;
+    uploadedPostFilename = result.body.pictures[0].imagePath;
+    const imgPath = `${__dirname}/../../public/uploads/${result.body.pictures[0].imagePath}`;
     product.id = result.body.id;
     expect(result.body.pictures[0]).toHaveProperty('imagePath');
     expect(result.body.name).toBe(product.name);
     expect(result.body.id).toBeTruthy();
-    expect(fs.existsSync(uploadedPostImagePath)).toBeTruthy();
+    expect(fs.existsSync(imgPath)).toBeTruthy();
   });
 
   it('should list all products with no filters', async () => {
@@ -190,14 +188,16 @@ describe('product route test', () => {
       .attach('pictures', newFarofaImg)
       .expect(200);
 
-    uploadedPutImagePath = `${__dirname}/../../public/uploads/${result.body.pictures[0].imagePath}`;
+    uploadedPutFilename = result.body.pictures[0].imagePath;
+    const oldImgPath = `${__dirname}/../../public/uploads/${uploadedPostFilename}`;
+    const imgPath = `${__dirname}/../../public/uploads/${result.body.pictures[0].imagePath}`;
     expect(result.body.pictures[0]).toHaveProperty('imagePath');
     expect(result.body.name).toBe(product.name);
     expect(result.body.description).toBe(product.description);
     expect(result.body.price).toBe(product.price);
     expect(result.body.inventory).toBe(product.inventory);
-    expect(fs.existsSync(uploadedPutImagePath)).toBeTruthy();
-    expect(fs.existsSync(uploadedPostImagePath)).toBeFalsy();
+    expect(fs.existsSync(imgPath)).toBeTruthy();
+    expect(fs.existsSync(oldImgPath)).toBeFalsy();
   });
 
   it('should update a product without image', async () => {
