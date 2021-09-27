@@ -5,6 +5,8 @@
 .env.local
 .env
 
+test.sqlite
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

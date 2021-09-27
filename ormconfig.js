@@ -19,7 +19,7 @@ module.exports = [
   {
     "name": "test",
     "type": "sqlite",
-    "database": "./src/database/database-test.sqlite",
+    "database": "./src/database/test.sqlite",
     "dropSchema": true,
     "synchronize": false,
     "logging": false,
