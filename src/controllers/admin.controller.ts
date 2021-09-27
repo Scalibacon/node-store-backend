@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import Admin from "../models/Admin";
 import adminService from "../services/admin.service";
+import auth from "../auth/auth";
 import { deleteUploadedPicture } from "../utils/deletePicture";
 import ErrorMessage from "../utils/ErrorMessage";
 
@@ -21,7 +22,7 @@ class AdminController{
 
   authAdmin(request: Request, response: Response, next: NextFunction, permission: number = 1){
     const token = request.headers['x-access-token'] as string;
-    const adminId = adminService.authAdmin(token, permission);
+    const adminId = auth.authAdmin(token, permission);
     if(adminId instanceof ErrorMessage){
       if(request.files instanceof Array && request.files.length > 0)
         deleteUploadedPicture(request.files.map(file => file.filename));
