@@ -17,7 +17,7 @@ adminRouter.post('/', auth.authAdmin, celebrate({
     name: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string().required(),
-    cpf: Joi.string(),
+    cpf: Joi.string().length(11),
     role: Joi.number().integer().default(1),
     isActive: Joi.boolean().default(true)
   })

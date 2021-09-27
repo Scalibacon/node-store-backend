@@ -27,7 +27,8 @@ userRouter.put('/:id', auth.authSamePerson, celebrate({
   }),
   [Segments.BODY]: Joi.object().keys({
     name: Joi.string().required(),
-    email: Joi.string().email().required()
+    email: Joi.string().email().required(),
+    cpf: Joi.string().length(11),
   })
 }), userController.update);
 

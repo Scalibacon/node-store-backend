@@ -16,6 +16,7 @@ afterAll(async () => {
 });
 
 describe('user route test', () => {
+  let userJwt: string;
   const user = new User();
   user.name = "Testinho Testículo";
   user.email = "teste@teste.com";
@@ -30,6 +31,7 @@ describe('user route test', () => {
     expect(result.body).toHaveProperty("id");
     expect(result.body.name).toEqual(user.name);
     expect(result.body.password).not.toBe(user.password);
+    user.id = result.body.id;
   });
 
   it('should log in and receive a jwt', async () => {
@@ -37,6 +39,8 @@ describe('user route test', () => {
       .post('/user/login')
       .send({ email: user.email, password: user.password })
       .expect(201);
+
+    userJwt = result.body;
 
     expect(typeof result.body === "string").toBeTruthy();
   });
@@ -84,6 +88,23 @@ describe('user route test', () => {
       .expect(400);
 
     expect(result.body).toHaveProperty('error');
+  });
+
+  it('should update a user', async () => {
+    user.name = "New Name";
+    user.cpf = "111.111.111-83".replace(/\./g, "").replace(/-/g,"");
+    const result = await request(app)
+      .put(`/user/${user.id}`)
+      .set("x-access-token", userJwt)
+      .send({
+        name: user.name,
+        email: user.email,
+        cpf: user.cpf,
+      })
+      .expect(200);
+
+    expect(result.body.name).toEqual(user.name);
+    expect(result.body.cpf).toEqual(user.cpf);
   });
 });
 

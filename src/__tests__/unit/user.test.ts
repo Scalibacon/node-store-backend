@@ -25,6 +25,7 @@ describe('testing user service', () => {
     const result = await userService.create(user) as User;
     user.password = "teste";
 
+    user.id = result.id;
     expect(result instanceof User).toBeTruthy();
     expect(result).toHaveProperty("id");
     expect(result.name).toEqual(user.name);
@@ -47,6 +48,14 @@ describe('testing user service', () => {
     const { password } = user;
     const result = await userService.login("emailerrado@errado.com", password) as ErrorMessage;
     expect(result instanceof ErrorMessage).toBeTruthy();
+  });
+
+  it('should update a user', async () => {
+    const result = await userService.update(user) as User;
+    user.name = "Mememeee";
+
+    expect(result instanceof User).toBeTruthy();
+    expect(result.name).toEqual(user.name);
   });
 });
 
