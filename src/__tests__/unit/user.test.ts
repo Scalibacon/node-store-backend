@@ -50,13 +50,21 @@ describe('testing user service', () => {
     expect(result instanceof ErrorMessage).toBeTruthy();
   });
 
+  it('should find a user by id', async () => {
+    const result = await userService.findById(user.id) as User;
+
+    expect(result instanceof User).toBeTruthy();
+    expect(result.name).toEqual(user.name);
+    expect(result).toHaveProperty('createdAt');
+  });
+
   it('should update a user', async () => {
     const result = await userService.update(user) as User;
     user.name = "Mememeee";
 
     expect(result instanceof User).toBeTruthy();
     expect(result.name).toEqual(user.name);
-  });
+  });  
 });
 
 describe('testing admin service', () => {

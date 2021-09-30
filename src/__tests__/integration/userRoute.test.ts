@@ -34,6 +34,14 @@ describe('user route test', () => {
     user.id = result.body.id;
   });
 
+  it('shouldn\'t find user by id (missing jwt)', async () => {
+    const result = await request(app)
+      .get(`/user/${user.id}`)
+      .expect(401);
+
+      expect(result.body).toHaveProperty('error');
+  });
+
   it('should log in and receive a jwt', async () => {
     const result = await request(app)
       .post('/user/login')
@@ -43,6 +51,15 @@ describe('user route test', () => {
     userJwt = result.body;
 
     expect(typeof result.body === "string").toBeTruthy();
+  });
+
+  it('should find user by id', async () => {
+    const result = await request(app)
+      .get(`/user/${user.id}`)
+      .set('x-access-token', userJwt)
+      .expect(200);
+
+      expect(result.body.name).toBe(user.name);
   });
 
   it('shouldn\'t log in (invalid email)', async () => {
