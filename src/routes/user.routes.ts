@@ -32,4 +32,10 @@ userRouter.put('/:id', auth.authSamePerson, celebrate({
   })
 }), userController.update);
 
+userRouter.get('/:id', auth.authSamePerson, celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    id: Joi.string().uuid().required()
+  })
+}), userController.findById);
+
 export default userRouter;

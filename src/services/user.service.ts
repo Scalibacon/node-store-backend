@@ -56,6 +56,23 @@ class UserService{
       return new ErrorMessage('Error trying to update user');
     }
   }
+
+  async findById(id: string): Promise<User | undefined | ErrorMessage>{
+    try{
+      const repository = DBConnection.connection.getRepository(User);
+      const userFound = await repository.findOne({
+        where: { id }
+      });
+      if(!userFound)
+        return new ErrorMessage('User not found', 404);
+
+      return userFound;
+    } catch(err){
+      if(err instanceof Error)
+        console.log('Error trying to find user by id =>> ' + err.message);
+      return new ErrorMessage('Error trying to find user by id'); 
+    }    
+  }
 }
 
 export default new UserService();

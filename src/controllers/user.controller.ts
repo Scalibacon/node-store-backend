@@ -28,6 +28,12 @@ class UserController{
 
     return response.status(updatedUser instanceof ErrorMessage ? updatedUser.status : 200).json(updatedUser);
   }
+
+  async findById(request: Request, response: Response){
+    const { id } = request.params;
+    const userFound = await userService.findById(id);
+    return response.status(userFound instanceof ErrorMessage ? userFound.status : 200).json(userFound);
+  }
 }
 
 export default new UserController();
