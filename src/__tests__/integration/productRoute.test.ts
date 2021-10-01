@@ -305,4 +305,25 @@ describe('product route test', () => {
 
     expect(result.body).toHaveProperty("error");
   });
+
+  it('should delete a product', async () => {
+    const result = await request(app)
+      .delete(`/product/${product.id}`)
+      .set('x-access-token', adminJwt)
+      .expect(200);
+
+    const imgPath = `${__dirname}/../../public/uploads/${uploadedPutFilename}`;
+
+    expect(result.body).toBe(true);    
+    expect(fs.existsSync(imgPath)).toBeFalsy();
+  });
+
+  it('shouldn\'t delete a product (missing jwt)', async () => {
+    const result = await request(app)
+      .delete(`/product/${product.id}`)
+      // .set('x-access-token', adminJwt)
+      .expect(401);
+
+    expect(result.body).toHaveProperty('error');  
+  });
 });

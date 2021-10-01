@@ -46,4 +46,10 @@ productRouter.get('/:id', celebrate({
 
 productRouter.use(productController.deletePictureOnError);
 
+productRouter.delete('/:id', auth.authAdmin, celebrate({
+  [Segments.PARAMS] : Joi.object().keys({
+    id: Joi.string().uuid().required()
+  })
+}), productController.delete);
+
 export default productRouter;

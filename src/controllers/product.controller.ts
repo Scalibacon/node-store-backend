@@ -37,10 +37,16 @@ class ProductController {
     return response.status(productFound instanceof ErrorMessage ? productFound.status : 200).json(productFound);
   };
 
-  async filterByManyOptions(request: Request, response: Response): Promise<any> {    
+  async filterByManyOptions(request: Request, response: Response) {    
     const options = request.query;
     const filteredProducts = await productService.filterByManyOptions(options);
     return response.status(filteredProducts instanceof ErrorMessage ? filteredProducts.status : 200).json(filteredProducts);
+  }
+
+  async delete(request: Request, response: Response){
+    const { id } = request.params;
+    const wasDeleted = await productService.delete(id);
+    return response.status(wasDeleted instanceof ErrorMessage ? wasDeleted.status : 200).json(wasDeleted);
   }
      
   async deletePictureOnError(error: Error, request: Request, response: Response, next: Function){

@@ -84,6 +84,26 @@ class ProductService{
       return new ErrorMessage('Error trying to filter products');
     }
   }
+
+  async delete(productId: string): Promise<boolean | ErrorMessage>{
+    try {
+      const repository = DBConnection.connection.getRepository(Product);    
+
+      const product = await repository.findOne(productId);
+      if(!product)
+        throw new Error('Product doesn\'t exists');
+      await repository.delete(productId);
+      product.pictures.forEach(async picture => {
+        await deleteUploadedPicture(picture.imagePath);
+      });
+
+      return true;
+    } catch(err){
+      if(err instanceof Error)
+        console.log('Error trying to delete product =>> ' + err.message);
+      return new ErrorMessage('Error trying to delete product');
+    }
+  }
 }
 
 export default new ProductService();

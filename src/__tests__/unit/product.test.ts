@@ -126,4 +126,9 @@ describe('testing product crud', () => {
     expect(savedProduct instanceof ErrorMessage).toBeTruthy();  
     product.price = 1.99;
   });
+
+  it('should delete a product', async () => {
+    const deleted = await productService.delete(product.id);
+    expect(deleted).toEqual(true);
+  })
 });
