@@ -1,4 +1,4 @@
-import { Connection, createConnection, getConnection } from "typeorm";
+import { Connection, createConnection } from "typeorm";
 
 class DBConnection {
   static connection: Connection;
