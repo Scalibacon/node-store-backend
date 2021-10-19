@@ -5,7 +5,9 @@ export type ProductOptions = {
   name?: string,
   categoryId?: number,
   minPrice?: number,
-  maxPrice?: number
+  maxPrice?: number,
+  offset?: number,
+  limit?: number
 }
 
 @EntityRepository(Product)
@@ -22,7 +24,9 @@ class ProductRepository extends Repository<Product>{
     name = '',
     categoryId,
     minPrice = 0,
-    maxPrice = 999999999 
+    maxPrice = 999999999,
+    offset = 0,
+    limit = 20
   }: ProductOptions): Promise<Product[]> {
     const filteredProducts = await this.find({
       where: [
@@ -42,6 +46,8 @@ class ProductRepository extends Repository<Product>{
         }
       ],
       relations: ["category"],
+      skip: offset * limit,
+      take: limit
     });
 
     return filteredProducts;

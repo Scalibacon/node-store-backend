@@ -34,7 +34,9 @@ productRouter.get('/', celebrate({
     name: Joi.string(),
     minPrice: Joi.number().positive().precision(2),
     maxPrice: Joi.number().positive().precision(2),
-    categoryId: Joi.number().integer().positive()
+    categoryId: Joi.number().integer().positive(),
+    offset: Joi.number().integer().greater(-1),
+    limit: Joi.number().integer().positive()
   })
 }), productController.filterByManyOptions);
 

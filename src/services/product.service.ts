@@ -1,5 +1,4 @@
 import DBConnection from "../database/DBConnection";
-import fs from 'fs';
 import { deleteUploadedPicture } from "../utils/deletePicture";
 import { Product } from "../models/Product";
 import ProductRepository, { ProductOptions } from "../repositories/ProductRepository";
