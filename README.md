@@ -29,14 +29,21 @@ Por ser uma API RESTful, é possível realizar as operações por meio das rotas
 - Criar um administrador*;
 - Logar como usuário ou admin; 
 
+###### \* Necessita passar um JWT com autorização de admin.
+###### \** Necessita passar um JWT com o mesmo ID da requisição.
+
 ## Configuração
 Para executar essa API numa máquina local basta baixar ou clonar esse repositório e instalar as dependências com o o comando `npm install`. Após ter instalado é só executar o comando `npm run dev` para iniciar a API, mas antes é necessário criar um arquivo `.env` na raiz do projeto, seguindo o modelo do arquivo `.env.example`. Essas variáveis serão usadas para criar o primeiro admin do sistema. Sem um admin não é possível utilizar vários recursos da API, incluindo criar outros admins.
 
-## Testes
-Este projeto tá configurado pra executar testes unitários e de integração de forma automática por meio do Jest. Para executar esses testes basta rodar o comando `npm test`. Esses testes utilizam uma base de dados separada, dedicada exclusivamente aos testes. Eles também testam o tratamento do upload de imagens por parte da API e, se funcionarem corretamente, excluem as imagens usadas nos testes da pasta de uploads
+## Armazenamento
+No momento existem 3 conexões de banco de dados, cada um pra um banco diferente. Um é exclusivo para os testes automatizados, outro é exclusivo pra auxiliar no desenvolvimento e 
+o último é o que será usado em produção. Por uma questão de praticidade os 3 bancos são SQLite no momento, mas é relativamente tranquilo de alterar o banco que será usado em produção (obrigado TypeORM 💕).
+<br><br>
 
-###### \* Necessita passar um JWT com autorização de admin.
-###### \** Necessita passar um JWT com o mesmo ID da requisição.
+As imagens referentes aos produtos são armazenadas numa pasta dedicada ao upload dessas imagens, que será pública, podendo facilmente (eu espero) ser buscadas pela aplicação front-end que irá consumir a API.
+
+## Testes
+Este projeto tá configurado pra executar testes unitários e de integração de forma automática por meio do Jest. Para executar esses testes basta rodar o comando `npm test`. Esses testes utilizam uma base de dados separada, dedicada exclusivamente aos testes. Eles também testam o tratamento do upload de imagens por parte da API e, se funcionarem corretamente, excluem as imagens usadas nos testes da pasta de uploads. 
 
 ## Client
 No momento ainda não há uma aplicação client pra consumir essa API, só o bom e velho Insomnia. Mas logo logo vou desenvolver alguma coisa pra deixar completinho. É isso.
