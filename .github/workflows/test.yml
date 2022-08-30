@@ -30,5 +30,13 @@ jobs:
       - name: Install dependencies
         run: npm install
         
+      - name: Create env file
+        run: |
+          touch .env
+          echo DEFAULT_USER_NAME=${{ secrets.DEFAULT_USER_NAME }} >> .env
+          echo DEFAULT_USER_EMAIL=${{ secrets.DEFAULT_USER_EMAIL }} >> .env
+          echo DEFAULT_USER_PASSWORD=${{ secrets.DEFAULT_USER_PASSWORD }} >> .env
+          echo SECRET=${{ secrets.SECRET }} >> .env
+        
       - name: Run test
         run: npm run test
