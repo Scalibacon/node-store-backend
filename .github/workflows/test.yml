@@ -38,7 +38,7 @@ jobs:
           echo DEFAULT_USER_PASSWORD=${{ secrets.DEFAULT_USER_PASSWORD }} >> .env
           echo SECRET=${{ secrets.SECRET }} >> .env
 
-      - name: Show env file só de zoas
+      - name: Show env file for test purposes
         run: cat .env
 
       - name: Show some env vars
