@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import request from 'supertest';
 import app from '../../app';
 import DBConnection from '../../database/DBConnection';
@@ -91,8 +92,8 @@ describe('category route test', () => {
 });
 
 describe('product route test', () => {
-  const farofaImg = `${__dirname}/../img/farofa.png`;
-  const newFarofaImg = `${__dirname}/../img/farofa-cebola.jpg`;
+  const farofaImg = path.join(__dirname, '..', 'img', 'farofa.png');
+  const newFarofaImg = path.join(__dirname, '..', 'img', 'farofa-cebola.jpg');
   const product = new Product();
   product.name = "Farofa Pronta Yoki 400g";
   product.categoryId = 1;
@@ -113,7 +114,8 @@ describe('product route test', () => {
       .expect(201);
 
     uploadedPostFilename = result.body.pictures[0].imagePath;
-    const imgPath = `${__dirname}/../../public/uploads/${result.body.pictures[0].imagePath}`;
+    const imgPath = path.join(__dirname, '..', '..', 'public', 'uploads', result.body.pictures[0].imagePath);
+    // const imgPath = `${__dirname}/../../public/uploads/${result.body.pictures[0].imagePath}`;
     product.id = result.body.id;
     expect(result.body.pictures[0]).toHaveProperty('imagePath');
     expect(result.body.name).toBe(product.name);
@@ -188,9 +190,10 @@ describe('product route test', () => {
       .attach('pictures', newFarofaImg)
       .expect(200);
 
-    uploadedPutFilename = result.body.pictures[0].imagePath;
-    const oldImgPath = `${__dirname}/../../public/uploads/${uploadedPostFilename}`;
-    const imgPath = `${__dirname}/../../public/uploads/${result.body.pictures[0].imagePath}`;
+    uploadedPutFilename = result.body.pictures[0].imagePath;     
+
+    const oldImgPath = path.join(__dirname, '..', '..', 'public', 'uploads', uploadedPostFilename);
+    const imgPath = path.join(__dirname, '..', '..', 'public', 'uploads', result.body.pictures[0].imagePath);
     expect(result.body.pictures[0]).toHaveProperty('imagePath');
     expect(result.body.name).toBe(product.name);
     expect(result.body.description).toBe(product.description);
@@ -312,7 +315,7 @@ describe('product route test', () => {
       .set('x-access-token', adminJwt)
       .expect(200);
 
-    const imgPath = `${__dirname}/../../public/uploads/${uploadedPutFilename}`;
+    const imgPath = path.join(__dirname, '..', '..', 'public', 'uploads', uploadedPutFilename);
 
     expect(result.body).toBe(true);    
     expect(fs.existsSync(imgPath)).toBeFalsy();
