@@ -7,7 +7,8 @@ export async function deleteUploadedPicture(filenames: string[] | string){
     filenames = [filenames];
 
   filenames.forEach(async (filename) => {
-    console.log('dir', __dirname, ' filename', filename);
+    if(!filename) return;
+    
     const filepath =  path.join(__dirname, '..', 'public', 'uploads', filename);
 
     if(fs.existsSync(filepath))
