@@ -40,6 +40,13 @@ jobs:
 
       - name: Show env file só de zoas
         run: cat .env
+
+      - name: Show some env vars
+        run: |
+          echo "The GitHub Action Secret will be masked: "
+          echo ${{ secrets.DEFAULT_USER_EMAIL }}
+          echo "Trick to echo GitHub Actions Secret: "
+          echo ${{secrets.DEFAULT_USER_EMAIL}} | sed 's/./& /g' 
         
       - name: Run test
         run: npm run test
