@@ -37,6 +37,9 @@ jobs:
           echo DEFAULT_USER_EMAIL=${{ secrets.DEFAULT_USER_EMAIL }} >> .env
           echo DEFAULT_USER_PASSWORD=${{ secrets.DEFAULT_USER_PASSWORD }} >> .env
           echo SECRET=${{ secrets.SECRET }} >> .env
+
+      - name: Show env file só de zoas
+        run: cat .env
         
       - name: Run test
         run: npm run test
