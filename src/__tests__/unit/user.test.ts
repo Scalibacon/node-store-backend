@@ -71,6 +71,7 @@ describe('testing admin service', () => {
   const superadmin = new Admin();
   superadmin.password = process.env.DEFAULT_USER_PASSWORD || "password";
   superadmin.email = process.env.DEFAULT_USER_EMAIL ?? "email";
+  console.log('Showing adm e-mail', process.env.DEFAULT_USER_EMAIL);
 
   it('should log in with default superadmin and receive a jwt', async () => {
     const { email, password } = superadmin;
