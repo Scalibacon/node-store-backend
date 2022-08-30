@@ -1,0 +1,16 @@
+version: '3.7' # docker-compose file version
+
+services: # define services
+  node-store-backend: # service name
+    container_name: node-store-backend
+    build: # dockerfile location
+      context: .
+      dockerfile: Dockerfile
+      target: base   
+    volumes:
+      - .:/usr/src/app/ # observes a folder and sends changes to the container folder    
+    expose:
+      - '3333'
+    ports:
+      - "3333:3333" # port redirection (when a request is made on the 1º port, it will call the container on the 2º port)
+    command: npm run dev # command to be executed
